@@ -25,21 +25,24 @@ def command_line():
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-o', '--output',
                         help='{0} [{1}]'.format(OUTPUT, None))
+
+    subparsers = parser.add_subparsers(dest='command', help='subcommands')
+    build_parser = subparsers.add_parser('build', help=BUILD)
+    local_parser = subparsers.add_parser('local', help=LOCAL)
+    update_parser = subparsers.add_parser('update', help=UPDATE)
+    # The last argument should be the input file.
     parser.add_argument('input', help=INPUT)
-    parser.add_argument('-b', '--build', action='store_true', help=BUILD)
-    parser.add_argument('-l', '--local', action='store_true', help=LOCAL)
-    parser.add_argument('-u', '--update', action='store_true', help=UPDATE)
 
     arguments = parser.parse_args()
     if arguments.input:
         try:
             bundler = Bundler(arguments.input)
             result = ''
-            if arguments.build:
+            if arguments.command == 'build':
                 result = bundler.build(arguments)
-            elif arguments.local:
+            elif arguments.command == 'local':
                 result = bundler.make_local(arguments)
-            elif arguments.update:
+            elif arguments.command == 'update':
                 result = bundler.update(arguments)
             if result:
                 if arguments.output:

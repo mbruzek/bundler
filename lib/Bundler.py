@@ -7,7 +7,9 @@ import os
 import string
 import yaml
 
-from Charm import Charm
+from CharmTools import CharmTools
+
+JUJU_REPOSITORY = os.getenv('JUJU_REPOSITORY')
 
 class Bundler:
     """The library class to check and update bundles."""
@@ -40,7 +42,7 @@ class Bundler:
         for service in services:
             charm = self.bundle['services'][service]['charm']
             name, revno = charm.rsplit('-', 1)
-            cs_revno = str(Charm.charm_show(name)['id']['Revision'])
+            cs_revno = str(CharmTools.charm_show(name)['id']['Revision'])
             if cs_revno != revno:
                 print('{0} revision number {1}'.format(name, cs_revno))
                 new_charm = name + '-' + cs_revno
@@ -53,12 +55,19 @@ class Bundler:
         services = self.bundle['services']
         for service in services:
             charm = self.bundle['services'][service]['charm']
-            name, revno = charm.rsplit('-', 1)
-            prefix, basename = name.rsplit('/', 1)
-            if '/' in prefix:
-                prefix, series = prefix.rsplit('/', 1)
-            elif ':' in prefix:
-                prefix, series = prefix.rsplit(':', 1)
-            new_name = 'local:{0}/{1}'.format(series, basename)
-            self.bundle['services'][service]['charm'] = new_name
-        return yaml.dump(self.bundle)
+            if not charm.startswith('local:')
+                # Logic must handle:
+                # cs:~usernamespace/series/charm-name-revno#
+                # cs:trusty/charm-name-revno#
+                # trusty/charm-name-revno#
+                # mysql
+                # <repository>:<series>/<service>
+                name, revno = charm.rsplit('-', 1)
+                prefix, basename = name.rsplit('/', 1)
+                if '/' in prefix:
+                    prefix, series = prefix.rsplit('/', 1)
+                elif ':' in prefix:
+                    prefix, series = prefix.rsplit(':', 1)
+                new_name = 'local:{0}/{1}'.format(series, basename)
+                self.bundle['services'][service]['charm'] = new_name
+            return yaml.dump(self.bundle)
