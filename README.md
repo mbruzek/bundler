@@ -9,7 +9,11 @@ charms captured in a flat file.
 This tool requires the 2.1 or higher charm-tools and charm packages installed,
 along with a connection to the Juju charm store.
 
+The Python ruamel yaml is required for preserving yaml comments, and file
+structure. Install the python-ruamel.yaml or python3-ruamel.yaml package.
+
 It may also be useful to have the standard Juju environment variables set.
+
 
 ## update
 Bundles contain charms that are often locked to a revision number. During

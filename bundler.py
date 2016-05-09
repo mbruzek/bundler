@@ -5,7 +5,6 @@ This is the command line interface to the Bundler library.
 """
 
 import argparse
-import sys
 import traceback
 
 from lib.Bundler import Bundler
@@ -23,12 +22,15 @@ def command_line():
     """The function to parse the arguments from the command line."""
     description = 'A tool to manage your bundles.'
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('-o', '--output',
-                        help='{0} [{1}]'.format(OUTPUT, None))
-
+    # Add a generic argument to optionally output to a file.
+    parser.add_argument('-o', '--output', help=OUTPUT)
+    # Create a subparser object for the subcommands.
     subparsers = parser.add_subparsers(dest='command', help='subcommands')
+    # Create a parser with it's own options for the build subcommand.
     build_parser = subparsers.add_parser('build', help=BUILD)
+    # Create a parser with it's own options for the local subcommand.
     local_parser = subparsers.add_parser('local', help=LOCAL)
+    # Create a parser with it's own options for the update subcommand.
     update_parser = subparsers.add_parser('update', help=UPDATE)
     # The last argument should be the input file.
     parser.add_argument('input', help=INPUT)
