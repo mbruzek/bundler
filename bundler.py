@@ -11,8 +11,10 @@ from lib.Bundler import Bundler
 
 
 BUILD = 'Download and charm build all the charms and layers locally.'
+DESTINATION = 'The destination directory to place the downloaded source.'
 INPUT = 'Input file name'
 LOCAL = 'Convert to local bundle'
+PULL_ALL = 'Pull all the source for the charms in the bundle.'
 SUBCOMMANDS = ['build', 'local', 'update']
 UPDATE = 'Update bundle to the latest revsions from the Charmstore'
 OUTPUT = 'Output file name'
@@ -28,8 +30,12 @@ def command_line():
     subparsers = parser.add_subparsers(dest='command', help='subcommands')
     # Create a parser with it's own options for the build subcommand.
     build_parser = subparsers.add_parser('build', help=BUILD)
+    # Make the destination option optional, defaulting to None.
+    build_parser.add_argument('destination', nargs='?', default=None, help=DESTINATION)
     # Create a parser with it's own options for the local subcommand.
     local_parser = subparsers.add_parser('local', help=LOCAL)
+    # Create a parser with it's own options for the pull-all subcommand.
+    pull_all_parser = subparsers.add_parser('pull-all', help=PULL_ALL)
     # Create a parser with it's own options for the update subcommand.
     update_parser = subparsers.add_parser('update', help=UPDATE)
     # The last argument should be the input file.
@@ -44,6 +50,8 @@ def command_line():
                 result = bundler.build(arguments)
             elif arguments.command == 'local':
                 result = bundler.make_local(arguments)
+            elif arguments.command == 'pull-all':
+                result = bundler.pull_all(arguments)
             elif arguments.command == 'update':
                 result = bundler.update(arguments)
             if result:

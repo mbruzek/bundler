@@ -33,7 +33,16 @@ class Bundler:
         services = self.bundle['services']
         for service in services:
             charm = self.bundle['services'][service]['charm']
-            print('Pull source for: ' + charm)
+            name, revno = charm.rsplit('-', 1)
+            CharmTools.charm_pull_source(name, options.destination)
+
+    def pull_all(self, options={}):
+        """Pull all the layers for each charm to the local filesystem."""
+        services = self.bundle['services']
+        for service in services:
+            charm = self.bundle['services'][service]['charm']
+            name, revno = charm.rsplit('-', 1)
+            CharmTools.charm_pull_source(name)
 
     def update(self, options={}):
         """Update the bundle with the optional options."""
@@ -41,7 +50,8 @@ class Bundler:
         for service in services:
             charm = self.bundle['services'][service]['charm']
             name, revno = charm.rsplit('-', 1)
-            cs_revno = str(CharmTools.charm_show(name)['id']['Revision'])
+            id = CharmTools.charm_show(name, ['id'])
+            cs_revno = str(id['Revision'])
             if cs_revno != revno:
                 print('{0} revision number {1}'.format(name, cs_revno))
                 new_charm = name + '-' + cs_revno
